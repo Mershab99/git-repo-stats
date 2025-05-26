@@ -18,11 +18,11 @@ func GetCommitStats(repos []models.RepoConfig, sinceDays int) (map[string][]mode
 
 	for _, repo := range repos {
 
-		localPath, _, err := CloneWithAuth(repo)
+		localPath, cleanup, err := CloneWithAuth(repo)
 		if err != nil {
 			return nil, fmt.Errorf("failed to clone %s: %w", repo.Url, err)
 		}
-		//defer cleanup()
+		defer cleanup()
 
 		commits, err := ExtractCommits(localPath, since)
 		if err != nil {

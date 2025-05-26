@@ -32,13 +32,16 @@ func CloneWithAuth(repo models.RepoConfig) (string, func(), error) {
 		}
 	}
 
-	_, err = git.PlainClone(tmpDir, false, cloneOptions)
+	_, err = git.PlainClone(tmpDir, true, cloneOptions)
 	if err != nil {
 		return "", nil, fmt.Errorf("clone failed: %w", err)
 	}
 
 	cleanup := func() {
-		os.RemoveAll(tmpDir)
+		err := os.RemoveAll(tmpDir)
+		if err != nil {
+			return
+		}
 	}
 
 	return tmpDir, cleanup, nil

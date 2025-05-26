@@ -10,7 +10,6 @@ import (
 
 // CommitsPost - Get commits from one or more repositories
 func (c *Container) CommitsPost(ctx echo.Context) error {
-	// This will be auto-wired from the OpenAPI-generated handler interface
 	var req models.CommitsRequest
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
@@ -19,8 +18,8 @@ func (c *Container) CommitsPost(ctx echo.Context) error {
 	var resp, err = git.GetCommitStats(req.Repositories, int(req.Days))
 	if err != nil {
 		fmt.Printf("Failed to get Git Commit Stats: %s", err)
+		return ctx.JSON(http.StatusInternalServerError, "Failed To Get Commit Stats")
 	}
-	print(resp)
 
 	return ctx.JSON(http.StatusOK, resp)
 }
