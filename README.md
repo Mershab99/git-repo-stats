@@ -1,4 +1,4 @@
-# Go Echo API Server for openapi
+# Git Repo Stats API
 
 A backend service that fetches Git commit history and metadata across all branches.
 Designed for showcasing portfolio work in Go (Echo + OpenAPI).
