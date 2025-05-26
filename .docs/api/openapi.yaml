@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  description: |
+    A backend service that fetches Git commit history and metadata across all branches.
+    Designed for showcasing portfolio work in Go (Echo + OpenAPI).
+  title: Git Repo Analyzer API
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+paths:
+  /commits:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitsRequest'
+          application/x-yaml:
+            schema:
+              $ref: '#/components/schemas/CommitsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/CommitInfo'
+                  type: array
+                type: object
+          description: List of commits grouped by repo
+        "400":
+          description: Invalid input
+        "500":
+          description: Server error
+      summary: Get commits from one or more repositories
+components:
+  schemas:
+    CommitsRequest:
+      example:
+        repositories:
+        - auth:
+            password: password
+            token: token
+            username: username
+          url: https://github.com/example/repo
+        - auth:
+            password: password
+            token: token
+            username: username
+          url: https://github.com/example/repo
+        days: 30
+      properties:
+        days:
+          example: 30
+          type: integer
+        repositories:
+          items:
+            $ref: '#/components/schemas/RepoConfig'
+          type: array
+      required:
+      - days
+      - repositories
+      type: object
+    RepoConfig:
+      example:
+        auth:
+          password: password
+          token: token
+          username: username
+        url: https://github.com/example/repo
+      properties:
+        url:
+          example: https://github.com/example/repo
+          format: uri
+          type: string
+        auth:
+          $ref: '#/components/schemas/Auth'
+      required:
+      - url
+      type: object
+    Auth:
+      example:
+        password: password
+        token: token
+        username: username
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+      type: object
+    CommitInfo:
+      properties:
+        hash:
+          type: string
+        author_name:
+          type: string
+        author_email:
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+        message:
+          type: string
+      type: object
