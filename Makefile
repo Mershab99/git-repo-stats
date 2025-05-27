@@ -48,30 +48,23 @@ fmt:
 build:
 	go build -o bin/git-analyzer main.go
 
-# Docker-related variables
-docker_registry ?= ghcr.io/your-github-user-or-org
-image_name ?= $(docker_registry)/git-analyzer
-image_tag ?= latest
-platforms ?= linux/amd64,linux/arm64
+# Variables
+docker_registry ?= $(CI_REGISTRY)
+image_name ?= $(CI_REGISTRY_IMAGE)
+image_tag ?= $(CI_COMMIT_REF_SLUG)
+#platforms ?= linux/amd64,linux/arm64
+platforms ?= linux/amd64
 full_image_name := $(image_name):$(image_tag)
 
-# Target: Build Docker image locally (single-arch)
-.PHONY: build-local
-build-local:
-	docker buildx build --platform linux/amd64 -t $(full_image_name) --load .
+# Targets
+.PHONY: docker build push
 
-# Target: Create builder, login, build multi-arch image, and push
-.PHONY: docker
+build-local:
+	docker buildx build --platform $(platforms) -t $(full_image_name) --load .
 docker:
 	docker buildx create --use --name multiarch-builder || true
-	echo "$(GITHUB_TOKEN)" | docker login ghcr.io -u "$(GITHUB_ACTOR)" --password-stdin
-	docker buildx build \
-		--platform $(platforms) \
-		-t "$(full_image_name)" \
-		--push .
+	docker login -u "$(CI_REGISTRY_USER)" -p "$(CI_REGISTRY_PASSWORD)" $(docker_registry)
+	docker buildx build --platform $(platforms) -t "$(full_image_name)" --push .
 
-# Helm chart update
-.PHONY: build-helm
 build-helm:
-	helm dep update ./charts/git-repo-stats
-
+	helm dep update ./charts/website
