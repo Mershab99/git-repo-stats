@@ -47,3 +47,31 @@ fmt:
 .PHONY: build
 build:
 	go build -o bin/git-analyzer main.go
+
+# Docker-related variables
+docker_registry ?= ghcr.io/your-github-user-or-org
+image_name ?= $(docker_registry)/git-analyzer
+image_tag ?= latest
+platforms ?= linux/amd64,linux/arm64
+full_image_name := $(image_name):$(image_tag)
+
+# Target: Build Docker image locally (single-arch)
+.PHONY: build-local
+build-local:
+	docker buildx build --platform linux/amd64 -t $(full_image_name) --load .
+
+# Target: Create builder, login, build multi-arch image, and push
+.PHONY: docker
+docker:
+	docker buildx create --use --name multiarch-builder || true
+	echo "$(GITHUB_TOKEN)" | docker login ghcr.io -u "$(GITHUB_ACTOR)" --password-stdin
+	docker buildx build \
+		--platform $(platforms) \
+		-t "$(full_image_name)" \
+		--push .
+
+# Helm chart update
+.PHONY: build-helm
+build-helm:
+	helm dep update ./charts/git-repo-stats
+
