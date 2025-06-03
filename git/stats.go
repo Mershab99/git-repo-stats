@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"time"
 
 	git "github.com/go-git/go-git/v5"
@@ -10,44 +11,59 @@ import (
 )
 
 func ExtractCommits(repoPath string, since time.Time) ([]models.CommitInfo, error) {
-	r, err := git.PlainOpen(repoPath)
+	// Open the git repository at the specified path
+	repo, err := git.PlainOpen(repoPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open repository: %w", err)
 	}
 
-	branches, err := r.Branches()
+	// Retrieve local branches
+	branches, err := repo.Branches()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list branches: %w", err)
 	}
 
-	var allCommits []models.CommitInfo
-	seen := map[string]bool{}
+	var (
+		allCommits []models.CommitInfo
+		seen       = make(map[string]bool)
+	)
 
+	// Iterate over each branch
 	err = branches.ForEach(func(ref *plumbing.Reference) error {
-		cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
+		// Get commit history starting from the branch tip
+		logIter, err := repo.Log(&git.LogOptions{From: ref.Hash()})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get log for branch %s: %w", ref.Name(), err)
 		}
 
-		return cIter.ForEach(func(c *object.Commit) error {
-			if c.Committer.When.Before(since) {
+		// Iterate over commits
+		return logIter.ForEach(func(commit *object.Commit) error {
+			// Skip commits before the specified time
+			if commit.Committer.When.Before(since) {
 				return nil
 			}
-			if seen[c.Hash.String()] {
+			// Skip duplicate commits
+			if seen[commit.Hash.String()] {
 				return nil
 			}
-			seen[c.Hash.String()] = true
+			seen[commit.Hash.String()] = true
 
+			// Append commit info
 			allCommits = append(allCommits, models.CommitInfo{
-				Hash:        c.Hash.String(),
-				Message:     c.Message,
-				AuthorName:  c.Author.Name,
-				AuthorEmail: c.Author.Email,
-				Timestamp:   c.Author.When,
+				Hash:        commit.Hash.String(),
+				Message:     commit.Message,
+				AuthorName:  commit.Author.Name,
+				AuthorEmail: commit.Author.Email,
+				Timestamp:   commit.Author.When,
 			})
+
 			return nil
 		})
 	})
 
-	return allCommits, err
+	if err != nil {
+		return nil, err
+	}
+
+	return allCommits, nil
 }

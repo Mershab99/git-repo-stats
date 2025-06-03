@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Git Repo Analyzer API
-  version: 1.0.0
+  version: 0.1.0
   description: |
     A backend service that fetches Git commit history and metadata across all branches.
     Designed for showcasing portfolio work in Go (Echo + OpenAPI).

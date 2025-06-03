@@ -1,4 +1,4 @@
-# Git Repo Stats API
+# Go Echo API Server for openapi
 
 A backend service that fetches Git commit history and metadata across all branches.
 Designed for showcasing portfolio work in Go (Echo + OpenAPI).
@@ -14,8 +14,8 @@ To see how to make this your own, look here:
 
 [README](https://openapi-generator.tech)
 
-- API version: 1.0.0
-- Build date: 2025-05-26T11:15:41.187489-04:00[America/Toronto]
+- API version: 0.1.0
+- Build date: 2025-06-02T22:26:24.749637-04:00[America/Toronto]
 
 ### Running the server
 

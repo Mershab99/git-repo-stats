@@ -4,7 +4,7 @@ info:
     A backend service that fetches Git commit history and metadata across all branches.
     Designed for showcasing portfolio work in Go (Echo + OpenAPI).
   title: Git Repo Analyzer API
-  version: 1.0.0
+  version: 0.1.0
 servers:
 - url: http://localhost:8080
 paths:
