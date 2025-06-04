@@ -8,6 +8,19 @@ info:
 servers:
 - url: http://localhost:8080
 paths:
+  /status:
+    get:
+      description: Returns 200 OK if the service is alive.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                example:
+                  status: ok
+                type: object
+          description: Alive
+      summary: Liveness probe endpoint
   /commits:
     post:
       requestBody:

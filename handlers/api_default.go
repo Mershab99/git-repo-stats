@@ -23,3 +23,10 @@ func (c *Container) CommitsPost(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, resp)
 }
+
+// StatusGet - Liveness probe endpoint
+func (c *Container) StatusGet(ctx echo.Context) error {
+	return ctx.JSON(http.StatusOK, models.HelloWorld{
+		Message: "Hello World",
+	})
+}

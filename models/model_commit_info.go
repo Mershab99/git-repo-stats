@@ -5,7 +5,6 @@ import (
 )
 
 type CommitInfo struct {
-
 	Hash string `json:"hash,omitempty"`
 
 	AuthorName string `json:"author_name,omitempty"`
