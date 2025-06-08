@@ -18,10 +18,13 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(cache.New(&cache.Config{
-		TTL:        15 * time.Minute,
-		Methods:    []string{"GET", "POST"},
+		TTL:        24 * time.Hour,
+		Methods:    []string{"GET"},
 		StatusCode: []int{200, 204},
 	}, c.InMemCache))
+
+	// CommitsHeatmapPost - Get commits from one or more repositories and return in a cal-heatmap compatible format
+	e.POST("/commits/heatmap", c.CommitsHeatmapPost)
 
 	// CommitsPost - Get commits from one or more repositories
 	e.POST("/commits", c.CommitsPost)

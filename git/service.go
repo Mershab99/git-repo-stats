@@ -31,7 +31,8 @@ func GetCommitStats(repos []models.RepoConfig, sinceDays int) (map[string][]mode
 
 		commits, err := getRemoteCommits(repoConfig.Url, auth, since)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get commits from %s: %w", repoConfig.Url, err)
+			log.Errorf("failed to get commits from %s: %w", repoConfig.Url, err)
+			continue
 		}
 
 		results[repoConfig.Url] = commits

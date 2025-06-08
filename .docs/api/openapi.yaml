@@ -48,6 +48,34 @@ paths:
         "500":
           description: Server error
       summary: Get commits from one or more repositories
+  /commits/heatmap:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitsRequest'
+          application/x-yaml:
+            schema:
+              $ref: '#/components/schemas/CommitsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/HeatmapData'
+                  type: array
+                type: object
+          description: List of commits grouped by repo
+        "400":
+          description: Invalid input
+        "500":
+          description: Server error
+      summary: Get commits from one or more repositories and return in a cal-heatmap
+        compatible format
 components:
   schemas:
     CommitsRequest:
@@ -119,4 +147,12 @@ components:
           type: string
         message:
           type: string
+      type: object
+    HeatmapData:
+      properties:
+        date:
+          format: date
+          type: string
+        value:
+          type: integer
       type: object

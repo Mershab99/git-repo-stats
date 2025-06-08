@@ -1,12 +1,10 @@
 .docs/api/openapi.yaml
-Dockerfile
 README.md
-go.mod
 handlers/api_default.go
-handlers/container.go
 main.go
 models/hello-world.go
 models/model_auth.go
 models/model_commit_info.go
 models/model_commits_request.go
+models/model_heatmap_data.go
 models/model_repo_config.go
